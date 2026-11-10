@@ -1,0 +1,13 @@
+schema_version: "1.1"
+name: rewrite-appended-doc
+expected_outcome: |
+  追記の節が時系列ごとに残っておらず、新しく入る人が読める構成に書き直されている。元の README に
+  あった事実が落ちていない（しきい値の最終値 0.7、入力の形式と channel の値、ラベル4種、other は
+  人が見る、make classify、Python 3.11 と uv sync、CI、Slack 通知先 #ops-alerts と Webhook の
+  保管場所、4000字の切り捨て、data/labeled は7日で消える、月末は30分かかる、sms の要望が未対応、
+  other の内訳とラベル追加が検討中、RC モードは本番で使わず削除したい）。造語の「強い分類」
+  「弱い分類」を説明なしに使っておらず、「RC モード」を定義せずに使っていない。「レビュー担当と
+  相談した結果」「調査したところ」「前回からの変更点」のような作業経緯が本文に残っていない。しきい値が
+  0.7 と 0.8 で矛盾したままになっていない。
+context:
+  scaffold_script: place-files.sh

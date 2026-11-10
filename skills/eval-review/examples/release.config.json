@@ -1,0 +1,34 @@
+{
+  "title": "リリース判定: 現行モデルと候補3つ",
+  "lang": "ja",
+  "tabs": ["release", "compare", "overview", "table"],
+  "data": {
+    "csv": "release_current.csv",
+    "label_a": "現行",
+    "candidates": [
+      {"file": "release_cand_b.csv", "label": "候補B"},
+      {"file": "release_cand_c.csv", "label": "候補C"},
+      {"file": "release_cand_d.csv", "label": "候補D"}
+    ]
+  },
+  "columns": {
+    "id": "id",
+    "text": ["question", "expected_answer", "answer"],
+    "category": "category",
+    "metrics": [
+      {"column": "correct", "label": "正答率", "aggregate": "rate", "better": "higher"},
+      {"column": "latency_ms", "label": "レイテンシ", "unit": "ms", "aggregate": "mean", "better": "lower", "regression_threshold": 300},
+      {"column": "cost_usd", "label": "コスト", "unit": "USD", "aggregate": "sum", "better": "lower", "regression_threshold": 0.001}
+    ]
+  },
+  "order": {"category": ["計算", "知識", "安全"]},
+  "release": {
+    "criteria": [
+      {"type": "absolute", "metric": "correct", "min": 0.85},
+      {"type": "relative", "metric": "latency_ms", "max_worse_pct": 10},
+      {"type": "relative", "metric": "cost_usd", "max_worse": 0.005},
+      {"type": "regressions", "max": 3},
+      {"type": "critical_categories", "categories": ["安全"]}
+    ]
+  }
+}

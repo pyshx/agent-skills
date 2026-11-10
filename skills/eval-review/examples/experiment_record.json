@@ -1,0 +1,340 @@
+{
+  "kind": "eval-review/experiment-record",
+  "version": 1,
+  "title": "実験: 検算の指示で正答率は上がるか",
+  "exported_at": "2026-10-13T23:55:32.264Z",
+  "files": {
+    "current": {
+      "label": "現行プロンプト",
+      "file": "experiment_baseline.csv"
+    }
+  },
+  "hypothesis": "回答の前に検算させる指示を加えると、正答率が 95% 以上に上がり、レイテンシの悪化は 15% 以内に収まる。安全カテゴリの回答は悪化しない。",
+  "criteria": [
+    {
+      "type": "absolute",
+      "metric": "correct",
+      "min": 0.95
+    },
+    {
+      "type": "relative",
+      "metric": "latency_ms",
+      "max_worse_pct": 15
+    },
+    {
+      "type": "regressions",
+      "max": 2,
+      "count": "unaccepted"
+    },
+    {
+      "type": "critical_categories",
+      "categories": [
+        "安全"
+      ]
+    }
+  ],
+  "review_labels": [
+    "許容",
+    "不可"
+  ],
+  "verdict_labels": {
+    "pass": "基準を満たす",
+    "review": "要レビュー",
+    "fail": "基準を満たさない"
+  },
+  "candidates": [
+    {
+      "label": "検算1回",
+      "file": "experiment_cond_a.csv",
+      "verdict": "pass",
+      "paired": 20,
+      "regressed": 0,
+      "unreviewed": 0,
+      "rejected": 0,
+      "criteria": [
+        {
+          "index": 0,
+          "value": 1,
+          "pass": true
+        },
+        {
+          "index": 1,
+          "value": 8.002116962159304,
+          "pass": true
+        },
+        {
+          "index": 2,
+          "value": 0,
+          "pass": true
+        },
+        {
+          "index": 3,
+          "value": 0,
+          "pass": true
+        }
+      ],
+      "metrics": [
+        {
+          "column": "correct",
+          "label": "正答率",
+          "n": 20,
+          "current": 0.9,
+          "candidate": 1,
+          "difference": 0.09999999999999998,
+          "ci95": [
+            -0.044050139297325736,
+            0.24405013929732575
+          ]
+        },
+        {
+          "column": "correct_of_3",
+          "label": "3回中の正答の割合",
+          "n": 20,
+          "current": 0.8833500000000001,
+          "candidate": 0.9833500000000001,
+          "difference": 0.09999999999999998,
+          "ci95": [
+            -0.025017762316126818,
+            0.22501776231612683
+          ]
+        },
+        {
+          "column": "latency_ms",
+          "label": "レイテンシ",
+          "n": 20,
+          "current": 944.75,
+          "candidate": 1020.35,
+          "difference": 75.60000000000002,
+          "ci95": [
+            71.8794018169117,
+            79.3205981830883
+          ]
+        },
+        {
+          "column": "cost_usd",
+          "label": "コスト",
+          "n": 20,
+          "current": 0.026390000000000004,
+          "candidate": 0.028389999999999995,
+          "difference": 0.0019999999999999914,
+          "ci95": [
+            0.001999999999999999,
+            0.002000000000000001
+          ]
+        },
+        {
+          "column": "output_chars",
+          "label": "出力の文字数",
+          "n": 20,
+          "current": 11.35,
+          "candidate": 97.35,
+          "difference": 86,
+          "ci95": [
+            83.96282339343988,
+            88.03717660656012
+          ]
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "label": "検算3回",
+      "file": "experiment_cond_b.csv",
+      "verdict": "fail",
+      "paired": 20,
+      "regressed": 0,
+      "unreviewed": 0,
+      "rejected": 0,
+      "criteria": [
+        {
+          "index": 0,
+          "value": 1,
+          "pass": true
+        },
+        {
+          "index": 1,
+          "value": 24.99603069595132,
+          "pass": false
+        },
+        {
+          "index": 2,
+          "value": 0,
+          "pass": true
+        },
+        {
+          "index": 3,
+          "value": 0,
+          "pass": true
+        }
+      ],
+      "metrics": [
+        {
+          "column": "correct",
+          "label": "正答率",
+          "n": 20,
+          "current": 0.9,
+          "candidate": 1,
+          "difference": 0.09999999999999998,
+          "ci95": [
+            -0.044050139297325736,
+            0.24405013929732575
+          ]
+        },
+        {
+          "column": "correct_of_3",
+          "label": "3回中の正答の割合",
+          "n": 20,
+          "current": 0.8833500000000001,
+          "candidate": 1,
+          "difference": 0.11664999999999992,
+          "ci95": [
+            -0.01014151779423439,
+            0.2434415177942344
+          ]
+        },
+        {
+          "column": "latency_ms",
+          "label": "レイテンシ",
+          "n": 20,
+          "current": 944.75,
+          "candidate": 1180.9,
+          "difference": 236.1500000000001,
+          "ci95": [
+            224.40377814505203,
+            247.89622185494798
+          ]
+        },
+        {
+          "column": "cost_usd",
+          "label": "コスト",
+          "n": 20,
+          "current": 0.026390000000000004,
+          "candidate": 0.03239,
+          "difference": 0.005999999999999998,
+          "ci95": [
+            0.005999999999999998,
+            0.006
+          ]
+        },
+        {
+          "column": "output_chars",
+          "label": "出力の文字数",
+          "n": 20,
+          "current": 11.35,
+          "candidate": 257.35,
+          "difference": 246.00000000000003,
+          "ci95": [
+            243.9628233934399,
+            248.0371766065601
+          ]
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "label": "検算1回＋短縮",
+      "file": "experiment_cond_c.csv",
+      "verdict": "review",
+      "paired": 20,
+      "regressed": 2,
+      "unreviewed": 1,
+      "rejected": 0,
+      "criteria": [
+        {
+          "index": 0,
+          "value": 0.95,
+          "pass": true
+        },
+        {
+          "index": 1,
+          "value": 7.112992855252717,
+          "pass": true
+        },
+        {
+          "index": 2,
+          "value": 1,
+          "pass": true
+        },
+        {
+          "index": 3,
+          "value": 0,
+          "pass": true
+        }
+      ],
+      "metrics": [
+        {
+          "column": "correct",
+          "label": "正答率",
+          "n": 20,
+          "current": 0.9,
+          "candidate": 0.95,
+          "difference": 0.04999999999999993,
+          "ci95": [
+            -0.13441168582392235,
+            0.23441168582392233
+          ]
+        },
+        {
+          "column": "correct_of_3",
+          "label": "3回中の正答の割合",
+          "n": 20,
+          "current": 0.8833500000000001,
+          "candidate": 0.9167,
+          "difference": 0.03334999999999988,
+          "ci95": [
+            -0.11767086615357555,
+            0.18437086615357554
+          ]
+        },
+        {
+          "column": "latency_ms",
+          "label": "レイテンシ",
+          "n": 20,
+          "current": 944.75,
+          "candidate": 1011.95,
+          "difference": 67.20000000000005,
+          "ci95": [
+            24.858188265622445,
+            109.54181173437756
+          ]
+        },
+        {
+          "column": "cost_usd",
+          "label": "コスト",
+          "n": 20,
+          "current": 0.026390000000000004,
+          "candidate": 0.02739,
+          "difference": 0.0009999999999999974,
+          "ci95": [
+            0.0009999999999999985,
+            0.0010000000000000007
+          ]
+        },
+        {
+          "column": "output_chars",
+          "label": "出力の文字数",
+          "n": 20,
+          "current": 11.35,
+          "candidate": 57.3,
+          "difference": 45.949999999999996,
+          "ci95": [
+            43.92716238745901,
+            47.97283761254099
+          ]
+        }
+      ],
+      "reviews": [
+        {
+          "id": "e13",
+          "label": "",
+          "note": ""
+        },
+        {
+          "id": "e09",
+          "label": "許容",
+          "note": "この 1 件だけ応答が遅い。再実行で 1,050 ms 前後に戻ったため一時的な遅延とみなし許容。"
+        }
+      ]
+    }
+  ]
+}

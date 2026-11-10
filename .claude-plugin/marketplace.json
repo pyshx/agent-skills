@@ -1,0 +1,32 @@
+{
+  "name": "pyshx-agent-skills",
+  "owner": {
+    "name": "pyshx"
+  },
+  "metadata": {
+    "description": "pyshx's Agent Skills for everyday development: verification records, delegated work, stacked PRs, eval review, retrospectives, diff explanations, web research, and more."
+  },
+  "plugins": [
+    {
+      "name": "pyshx",
+      "description": "All of pyshx's Agent Skills as one plugin, invoked as pyshx:<skill-name>.",
+      "version": "0.1.0",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skills/delegated-work",
+        "./skills/eval-review",
+        "./skills/explain-diff-html",
+        "./skills/explain-diff-notion",
+        "./skills/mathland",
+        "./skills/open-in-editor",
+        "./skills/session-cleanup",
+        "./skills/session-retrospective",
+        "./skills/shared-doc-writing",
+        "./skills/stacked-prs",
+        "./skills/verification-record",
+        "./skills/web-research"
+      ]
+    }
+  ]
+}

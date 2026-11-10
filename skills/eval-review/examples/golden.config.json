@@ -1,0 +1,21 @@
+{
+  "title": "ゴールデンデータセット: 現行モデル vs 新モデル",
+  "lang": "ja",
+  "tabs": ["compare", "overview", "table"],
+  "data": {
+    "csv": "golden_model_a.csv",
+    "label_a": "現行",
+    "candidates": [{"file": "golden_model_b.csv", "label": "新"}]
+  },
+  "columns": {
+    "id": "id",
+    "text": ["question", "expected_answer", "answer"],
+    "category": "category",
+    "metrics": [
+      {"column": "correct", "label": "正答率", "aggregate": "rate", "better": "higher"},
+      {"column": "latency_ms", "label": "レイテンシ", "unit": "ms", "aggregate": "mean", "better": "lower", "regression_threshold": 300},
+      {"column": "cost_usd", "label": "コスト", "unit": "USD", "aggregate": "sum", "better": "lower", "regression_threshold": 0.001}
+    ]
+  },
+  "histogram": "latency_ms"
+}

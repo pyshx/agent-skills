@@ -1,0 +1,24 @@
+{
+  "title": "ファクトチェックのレビュー（JSONL）",
+  "lang": "ja",
+  "tabs": ["review", "overview", "table"],
+  "data": {
+    "csv": "factcheck.jsonl"
+  },
+  "columns": {
+    "id": "id",
+    "text": ["claim", "source.excerpt", "llm.rationale", "citations"],
+    "collapsed": ["citations"],
+    "category": "category",
+    "verdict": "llm.verdict",
+    "metrics": [
+      {"column": "llm.confidence", "label": "確信度", "aggregate": "mean", "better": "higher"}
+    ]
+  },
+  "order": {
+    "llm.verdict": ["supported", "contradicted", "unverifiable"]
+  },
+  "review": {
+    "labels": ["正しい", "誤り", "保留"]
+  }
+}

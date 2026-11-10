@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# codex-query — web research via the codex CLI's hosted web.run pipeline.
+# Codex runs the search → open → find loop server-side and returns a concise,
+# citation-annotated answer; raw pages never enter the caller's context.
+#
+# Usage: codex-query <question...>
+# Env:   CODEX_QUERY_MODEL  optional model override (e.g. gpt-5.4)
+#
+# Requires: codex CLI (logged in). Each call consumes codex/OpenAI usage.
+set -euo pipefail
+
+if [ $# -eq 0 ]; then
+  echo "usage: codex-query <question>" >&2
+  exit 2
+fi
+
+question="$*"
+out="$(mktemp -t codex-query.out)"
+log="$(mktemp -t codex-query.log)"
+trap 'rm -f "$out" "$log"' EXIT
+
+model_args=()
+if [ -n "${CODEX_QUERY_MODEL:-}" ]; then
+  model_args=(-m "$CODEX_QUERY_MODEL")
+fi
+
+prompt="Research this on the web using web search. Do not read or modify local files; use only web sources. Prefer primary sources (official docs, release notes, papers, primary reporting). Answer concisely and put a markdown citation link next to each claim.
+
+Question: ${question}"
+
+# Neutral cwd so codex doesn't pick up a repo's AGENTS.md; read-only sandbox
+# and --ephemeral keep the call side-effect free.
+if ! codex exec \
+  -C "${TMPDIR:-/tmp}" \
+  -s read-only \
+  --skip-git-repo-check \
+  --ephemeral \
+  --color never \
+  -c 'web_search_mode="live"' \
+  ${model_args[@]+"${model_args[@]}"} \
+  -o "$out" \
+  "$prompt" >"$log" 2>&1; then
+  echo "codex-query: codex exec failed; transcript tail:" >&2
+  tail -20 "$log" >&2
+  exit 1
+fi
+
+cat "$out"
