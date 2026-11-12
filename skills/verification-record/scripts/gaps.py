@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """List the checks that records say could not be run, most frequent first.
 
-Directories are searched recursively for *.md files. Files without a Not performed section are skipped;
-records whose Not performed table is malformed are reported on stderr and skipped.
+Directories are searched recursively for *.md files. Any record form works: full, compact, or a PR
+template's What I Did Not Check section. Files with no record are skipped; malformed records are reported on
+stderr and their readable gaps still counted.
 """
 
 import argparse
@@ -12,7 +13,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from record import COLUMNS, NOT_PERFORMED, RecordError, is_none_row, load, record_id
+from record import RecordError, load, read, record_id
 
 
 def files(args):
@@ -31,19 +32,14 @@ def gap_rows(paths, warn):
         except RecordError as e:
             warn(str(e))
             continue
-        if NOT_PERFORMED not in record.sections:
+        found = read(record)
+        if found.form == "none":
             continue
-        table = record.rows(NOT_PERFORMED)
-        if not table or tuple(c.lower() for c in table[0]) != COLUMNS[NOT_PERFORMED]:
-            warn(f"{path}: Not performed table is missing or has the wrong columns; run check_record.py on it")
-            continue
-        for row in table[1:]:
-            if is_none_row(row):
-                continue
-            if len(row) != 3:
-                warn(f"{path}: skipped a Not performed row with {len(row)} cells")
-                continue
-            yield str(path), record_id(record), row[0], row[1], row[2]
+        if found.problems:
+            warn(f"{path}: {found.problems[0]}; run check_record.py on it")
+        rid = record_id(record)
+        for gap in found.gaps:
+            yield str(path), rid, gap.check, gap.why, gap.enable
 
 
 def key(check):

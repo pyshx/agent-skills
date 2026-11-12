@@ -10,7 +10,7 @@
     {
       "name": "pyshx",
       "description": "All of pyshx's Agent Skills as one plugin, invoked as pyshx:<skill-name>.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "source": "./",
       "strict": false,
       "skills": [

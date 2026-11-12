@@ -52,7 +52,24 @@ Session refresh after token expiry has no test.
 
 ## 3. Put it where the reader looks
 
-Follow the repository's convention. If it has a `verifications/` directory, open the PR first, then commit the record there as `<pr-number>.md`. Otherwise, put the three sections under a `## Verification` heading in the PR description, using `###` headings. For work without a PR, put the record in your final report.
+Follow the repository's convention. If it has a `verifications/` directory, open the PR first, then commit the record there as `<pr-number>.md`. For work without a PR, put the record in your final report.
+
+In a PR description, use the first of these that fits:
+
+1. **The repository's PR template.** When it has "What I Checked" and "What I Did Not Check" sections, fill them: one bullet per check, and `None.` under What I Did Not Check only when nothing was skipped.
+2. **The compact form.** One table under `## Verification`, which keeps a PR body short:
+
+   ```markdown
+   | Check | Result |
+   |---|---|
+   | `uv run pytest tests/auth` | 48 passed |
+   | Login in a real browser | Not performed: no staging URL for this branch |
+   ```
+
+   A check that could not run is a row whose Result starts with `Not performed:` and gives the reason. Put the remaining risk in a sentence after the table.
+3. **The full form** from step 2, with `###` headings, when the reader needs Evidence and What would enable it as separate columns.
+
+All three forms carry the same rules: every check the change calls for is a row or a bullet, and a skipped check is stated, never left out.
 
 ## 4. Lint it
 
@@ -61,7 +78,7 @@ python3 <skill-dir>/scripts/check_record.py verifications/142.md
 gh pr view 142 --json body -q .body | python3 <skill-dir>/scripts/check_record.py -
 ```
 
-The script prints the status it derives from the rows: `failing` (a Result starts with `FAIL`), `unverified` (nothing performed), `partial` (some gaps), or `verified` (no gaps). It exits 1 on a missing or duplicated section, wrong columns, an empty cell, or two `none` tables. Fix the record, not the script. Report the derived status as it is: `unverified` is an honest result, and `failing` means the work is not done.
+The script prints the status it derives from the rows: `failing` (a Result starts with `FAIL`), `unverified` (nothing performed), `partial` (some gaps), or `verified` (no gaps). It reads any of the three forms and names the one it found. It exits 1 when there is no record, on a missing or duplicated section, wrong columns, an empty cell, two `none` tables, or a `Not performed` with no reason. A list of checks that ran with nothing about what did not run is not a record. Fix the record, not the script. Report the derived status as it is: `unverified` is an honest result, and `failing` means the work is not done.
 
 To block pull requests that lack a valid record, read [references/ci-gate.md](references/ci-gate.md).
 
@@ -74,4 +91,4 @@ python3 <skill-dir>/scripts/gaps.py --csv verifications/ > gaps.csv
 
 For records kept in PR descriptions, save each body to a file first, for example `gh pr view 142 --json body -q .body > records/142.md`, then pass the directory.
 
-It groups Not performed rows by check, most frequent first, with the reasons and enablers given. A check that keeps appearing marks a hole in the harness. Propose closing it (a preview environment, a fixture, a script that drives the feature) rather than writing the same gap again. `--csv` writes one row per gap for a spreadsheet or a review page.
+It groups the checks that were not performed, from any of the three forms, by check, most frequent first, with the reasons and enablers given. A check that keeps appearing marks a hole in the harness. Propose closing it (a preview environment, a fixture, a script that drives the feature) rather than writing the same gap again. `--csv` writes one row per gap for a spreadsheet or a review page.

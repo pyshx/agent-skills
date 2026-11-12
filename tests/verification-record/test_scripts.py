@@ -170,5 +170,88 @@ class CheckRecordEdges(unittest.TestCase):
         self.assertIn("cannot read", r.stdout)
         self.assertNotIn("Traceback", r.stderr)
 
+COMPACT = """## Why
+Retries were unbounded.
+
+## Verification
+
+| Check | Result |
+|---|---|
+| `go test ./retry/...` | 41 passed |
+| Staging deploy | Not performed: needs merge and deploy |
+
+## Rollout
+Bump the version.
+"""
+
+TEMPLATE = """## How did you verify that the changes were implemented as intended?
+
+### What I Checked
+
+- `bun run test`: 228 files pass.
+- Mutation check: reverting the fix fails 2 tests.
+
+### What I Did Not Check
+
+- Not run in a browser. A staging check should cover the team page.
+- Request cost was not measured.
+
+## Are there any concerns?
+None.
+"""
+
+
+class OtherForms(unittest.TestCase):
+    def check(self, text):
+        return run("check_record.py", "-", stdin=text)
+
+    def test_compact_table_is_a_record(self):
+        r = self.check(COMPACT)
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn("partial (1 performed, 0 failing, 1 not performed) [compact]", r.stdout)
+
+    def test_compact_gap_needs_a_reason(self):
+        r = self.check(COMPACT.replace("Not performed: needs merge and deploy", "Not performed"))
+        self.assertIn("row 2: `Not performed` needs a reason", r.stdout)
+
+    def test_compact_failing_result(self):
+        r = self.check(COMPACT.replace("41 passed", "FAIL: 2 of 41 failed"))
+        self.assertIn(": failing (", r.stdout)
+
+    def test_expected_failure_wording_is_not_failing(self):
+        r = self.check(COMPACT.replace("41 passed", "Fails on main as production does"))
+        self.assertIn(": partial (1 performed, 0 failing", r.stdout)
+
+    def test_template_headings_are_a_record(self):
+        r = self.check(TEMPLATE)
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn("partial (2 performed, 0 failing, 2 not performed) [template]", r.stdout)
+
+    def test_template_with_nothing_unchecked_is_verified(self):
+        body = TEMPLATE.split("### What I Did Not Check")[0] + "### What I Did Not Check\n\nNone.\n"
+        r = self.check(body)
+        self.assertIn("verified (2 performed, 0 failing, 0 not performed) [template]", r.stdout)
+
+    def test_template_needs_both_headings(self):
+        r = self.check(TEMPLATE.split("### What I Did Not Check")[0])
+        self.assertIn("needs both What I Checked and What I Did Not Check", r.stdout)
+
+    def test_no_record_at_all_fails(self):
+        r = self.check("## Why\nA fix.\n\n## Changes\n- one line\n")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("no verification record found", r.stdout)
+
+    def test_gaps_reads_every_form(self):
+        with tempfile.TemporaryDirectory() as d:
+            (Path(d) / "compact.md").write_text(COMPACT.replace("Staging deploy", "Login in a real browser"))
+            (Path(d) / "template.md").write_text(TEMPLATE)
+            r = run("gaps.py", "--csv", d, FIXTURES / "partial.md")
+        checks = [row[2] for row in csv.reader(r.stdout.splitlines())][1:]
+        self.assertEqual(
+            sorted(checks),
+            ["Login in a real browser", "Login in a real browser", "Not run in a browser", "Request cost was not measured"],
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
